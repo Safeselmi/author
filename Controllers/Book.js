@@ -1,4 +1,5 @@
 const Book = require("../models/Book");
+const Joi = require("joi");
 
 const addBook = (req, res) => {
   console.log(req.body);
@@ -93,6 +94,27 @@ const deleteBook = (req, res) => {
       res.status(500).json({ error: "Failed to delete the Book" });
     });
 };
+const findBooks = async (req, res) => {
+  try {
+    const books = await Book.findByAuthor(req.params.id);
+
+    if (books.length > 0) {
+      res.status(200).json({
+        booksByAuthor: books,
+        message: "Objects trouvés",
+      });
+    } else {
+      res.status(404).json({
+        message: "Aucun livre trouvé pour cet auteur",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Problème d'extraction",
+    });
+  }
+};
 
 module.exports = {
   getBook: getBook,
@@ -100,4 +122,5 @@ module.exports = {
   getBookById: getBookById,
   updateBook: updateBook,
   deleteBook: deleteBook,
+  findBooks: findBooks,
 };
